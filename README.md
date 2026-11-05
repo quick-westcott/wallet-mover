@@ -1,13 +1,13 @@
-**Start here → [trenchy.tools](https://trenchy.tools)** · part of [TrenchyTools](https://github.com/Trenchy-Tools) — one API key to launch and trade on pump.fun and pons.
+**Start here → [trenchy.tools]** · part of [](https://github.com/Trenchy-Tools) — one API key to launch and trade on pump.fun and pons.
 
-<!-- trenchytools:header -->
+
 <p align="center"><img src="./.github/social.png" alt="wallet mover" width="100%"></p>
 
-<p align="center"><a href="https://mover.trenchy.tools"><b>Live demo</b></a> · <a href="https://trenchy.tools/docs">Docs</a> · <a href="https://api.trenchy.tools/api/create-api-key">Get an API key</a> · <a href="https://api.trenchy.tools/AGENTS.md">AGENTS.md</a> · <a href="https://api.trenchy.tools/openapi.json">OpenAPI</a> · <a href="https://trenchy.tools/status">Status</a> · <a href="https://t.me/trenchytools">Telegram</a> · <a href="https://x.com/trenchytoolz">X</a></p>
+<p align="center"><a href=""><b>Live demo</b></a> · <a href="/docs">Docs</a> · <a href="/api/create-api-key">Get an API key</a> · <a href="/AGENTS.md">AGENTS.md</a> · <a href="/openapi.json">OpenAPI</a> · <a href="/status">Status</a> · <a href="https://t.me/">Telegram</a> · <a href="https://x.com/trenchytoolz">X</a></p>
 
 # wallet mover
 
-Move money between many wallets and chains on the [TrenchyTools API](https://api.trenchy.tools): create wallets on
+Move money between many wallets and chains on the [ API]: create wallets on
 Solana and Robinhood chain, fund them, split, distribute, consolidate, hop through an exchange (same chain or
 cross-chain, optionally through a named venue to break a wallet cluster, or through a privacy-coin leg). One Next.js
 app, one process, keys as files on your Desktop.
@@ -21,8 +21,8 @@ here is usable there at once.
 cd demos/wallet-mover
 npm install
 cp .env.example .env
-curl "https://api.trenchy.tools/api/create-api-key?label=wallet-mover"   # → { "apiKey": "…" }; paste it into .env as TRENCHY_API_KEY
-npm run dev                                                                  # http://localhost:3000
+curl "/api/create-api-key?label=wallet-mover" # → { "apiKey": "…" }; paste it into .env as TRENCHY_API_KEY
+npm run dev # http://localhost:3000
 ```
 
 Open **Wallets**, press **+ New wallet** twice (Solana), fund the starred one (★) from your own wallet (copy its address
@@ -35,18 +35,18 @@ wallet folder, never in the repo.
 ## Where your keys are
 
 ```
-WALLET_BACKUP_DIR                  when set
-~/Desktop/trenchytools-wallets     when a Desktop folder exists
-~/trenchytools-wallets             otherwise
+WALLET_BACKUP_DIR when set
+~/Desktop/-wallets when a Desktop folder exists
+~/-wallets otherwise
 ```
 
 That folder **is** the wallet store. One JSON per wallet, created before the response that announces it returns:
 
 ```
 <date>-<chain>-<role>-<address>.json
-{ "publicKey", "privateKey", "chain": "sol" | "rh" | "eth" | "bnb", "role", "label", "createdAt", "app": "trenchytools-wallet-mover", "note" }
-wallets.csv                        createdAt,chain,role,label,publicKey,privateKey   (one line per wallet)
-_app/wallet-mover/                 settings.json, transfers.json (this app's state)
+{ "publicKey", "privateKey", "chain": "sol" | "rh" | "eth" | "bnb", "role", "label", "createdAt", "app": "-wallet-mover", "note" }
+wallets.csv createdAt,chain,role,label,publicKey,privateKey (one line per wallet)
+_app/wallet-mover/ settings.json, transfers.json (this app's state)
 ```
 
 Solana files hold a base58 64-byte secret, EVM files a `0x` key. An EVM key owns the same address on every EVM
@@ -72,7 +72,7 @@ Run stops with a plain message and nothing has been created, signed or sent.
 
 1. `POST /api/transfer` with `route: "direct"` (or one `POST /api/transfer/batch` for a fan-out / consolidate) — a record with a `transferId`
 2. Solana: `GET /api/sol/blockhash` → build one `SystemProgram.transfer` → sign (`lib/core/sol.ts`) → `POST /api/sol/send` (simulated first)
-   Robinhood: `GET /api/rh/account?wallet=…` (chain id, pending nonce, fee values) → sign `{to, value, gas: 21000}` with viem (`lib/core/evm.ts`) → `POST /api/rh/send`
+ Robinhood: `GET /api/rh/account?wallet=…` (chain id, pending nonce, fee values) → sign `{to, value, gas: 21000}` with viem (`lib/core/evm.ts`) → `POST /api/rh/send`
 3. `POST /api/transfer/:id/sent { hash }` — the record is complete
 4. `GET /api/sol/tx/:signature` / `GET /api/rh/tx/:hash` until confirmed
 
@@ -148,10 +148,10 @@ along with `lib/core/sol.ts` (Solana signer + deposit check) and `lib/core/evm.t
 
 ## Build it with AI
 
-Paste this into your coding agent together with https://api.trenchy.tools/AGENTS.md:
+Paste this into your coding agent together with /AGENTS.md:
 
-> Build a wallet mover on the TrenchyTools API like `demos/wallet-mover`: wallets are JSON files in
-> `~/Desktop/trenchytools-wallets` written before use, never pay a wallet without its file (409 `not_backed_up`),
+> Build a wallet mover on the API like `demos/wallet-mover`: wallets are JSON files in
+> `~/Desktop/-wallets` written before use, never pay a wallet without its file (409 `not_backed_up`),
 > preflight balances with `GET /api/sol/balances` / `GET /api/rh/balances`, create legs with `POST /api/transfer` or
 > `/batch`, verify the unsigned deposit (payer, destination, exact amount) before signing, send with
 > `POST /api/sol/send` / `POST /api/rh/send`, record with `POST /api/transfer/:id/sent`, poll `GET /api/transfer/:id`
@@ -174,26 +174,26 @@ The public demo (`mover.trenchy.tools`) is this same app built in **demo mode**,
 holding their keys:
 
 ```bash
-NEXT_PUBLIC_DEMO=1 npm run build              # build-time flag: the pages talk to the in-browser engine
-DEMO_MODE=1 node .next/standalone/server.js   # runtime flag: every /api/* route answers 404 { code: "demo_mode" }
+NEXT_PUBLIC_DEMO=1 npm run build # build-time flag: the pages talk to the in-browser engine
+DEMO_MODE=1 node .next/standalone/server.js # runtime flag: every /api/* route answers 404 { code: "demo_mode" }
 ```
 
 What differs from local mode (which is unchanged without the flags):
 
 - **Keys live in the visitor's browser**: one `localStorage` store for every chain (Solana, Robinhood, Ethereum, BNB), one
-  entry per wallet in the wallet-file shape, `chain` on each (the same 0x address may exist once per chain, like the files).
-  Signing happens in the tab: web3.js for Solana (`GET /api/sol/blockhash`, the deposit check before an exchange deposit),
-  viem for EVM (`GET /api/rh/account` for chain id, nonce and fees). The server keeps no state and serves no wallet route
-  ([`proxy.ts`](proxy.ts) → `demoGuard` in `lib/http.ts`).
+ entry per wallet in the wallet-file shape, `chain` on each (the same 0x address may exist once per chain, like the files).
+ Signing happens in the tab: web3.js for Solana (`GET /api/sol/blockhash`, the deposit check before an exchange deposit),
+ viem for EVM (`GET /api/rh/account` for chain id, nonce and fees). The server keeps no state and serves no wallet route
+ ([`proxy.ts`](proxy.ts) → `demoGuard` in `lib/http.ts`).
 - **Backup first:** a new wallet is *not backed up*: no move pays it or signs with it (`409 not_backed_up`) until **Download
-  backup** (status strip or Wallets page) has saved its key. One file per click: a JSON with every key and a CSV copy inside.
-  **Export all keys** downloads everything any time. A pool move's relay wallet gets its own backup download before it is
-  paid. Clearing the site's data deletes the keys.
+ backup** (status strip or Wallets page) has saved its key. One file per click: a JSON with every key and a CSV copy inside.
+ **Export all keys** downloads everything any time. A pool move's relay wallet gets its own backup download before it is
+ paid. Clearing the site's data deletes the keys.
 - **Each visitor gets their own API key**, created in the browser on the first visit (`GET /api/create-api-key?label=demo-mover`)
-  and kept in `localStorage`. Settings shows it, takes a pasted key, and shows the API's refusal verbatim when creation is
-  rate-limited. Every API call goes straight from the browser to `https://api.trenchy.tools`.
+ and kept in `localStorage`. Settings shows it, takes a pasted key, and shows the API's refusal verbatim when creation is
+ rate-limited. Every API call goes straight from the browser to ``.
 - **A move runs in the tab**: keep it open. Jobs and the Activity ledger (`transfers.json` in local mode) live in
-  `localStorage`; a move whose tab was closed is marked interrupted on the next visit.
+ `localStorage`; a move whose tab was closed is marked interrupted on the next visit.
 - A strict Content-Security-Policy is sent (`next.config.ts`): scripts from this origin only, network to this origin and the API only.
 
 How it is built: the pages call their routes through `appFetch` ([`lib/browser/demo.ts`](lib/browser/demo.ts)). In demo
@@ -204,18 +204,18 @@ signers) on the browser key store ([`lib/browser/keystore.ts`](lib/browser/keyst
 ## Files
 
 ```
-app/        layout.tsx  page.tsx(→wallets)  wallets/  move/  activity/
-            api/wallets/{route,import,balances,export,rewrite-backups,rename,key,main,archive}  api/move/{plan,preview,run}
-            api/{settings,transfer/routes,transfer/venues,activity}
+app/ layout.tsx page.tsx(→wallets) wallets/ move/ activity/
+ api/wallets/{route,import,balances,export,rewrite-backups,rename,key,main,archive} api/move/{plan,preview,run}
+ api/{settings,transfer/routes,transfer/venues,activity}
 components/ top-bar logo status-strip settings-sheet demo-banner api-error transfer-bits route-picker legs theme-toggle providers
-            ui/{button,input,card,table,sheet}
-lib/        chains.ts  trenchy.ts (API client)  wallets.ts (folder store + backup rule)  runner.ts (jobs in server memory)
-            transfers.ts (transfers.json)  settings.ts (+ ★ per chain, archived)  env.ts  paths.ts  http.ts  client.ts  utils.ts
-lib/core/   shared by both modes, no node imports: sol.ts  evm.ts (signers + deposit checks)  moves.ts (shapes, splits, legs)
-            plan-body.ts (desk body → plan, preview)  runner.ts (preflight → create → verify → sign → send → sent → poll)
-            transfers.ts (ledger + activity merge)  wallet-record.ts  errors.ts  env.ts
-lib/browser/ demo mode only: demo.ts (flag + appFetch)  engine.ts (the /api routes in the tab)  keystore.ts  signer.ts  api-key.ts
-proxy.ts    demo mode: every /api route → 404 demo_mode
+ ui/{button,input,card,table,sheet}
+lib/ chains.ts trenchy.ts (API client) wallets.ts (folder store + backup rule) runner.ts (jobs in server memory)
+ transfers.ts (transfers.json) settings.ts (+ ★ per chain, archived) env.ts paths.ts http.ts client.ts utils.ts
+lib/core/ shared by both modes, no node imports: sol.ts evm.ts (signers + deposit checks) moves.ts (shapes, splits, legs)
+ plan-body.ts (desk body → plan, preview) runner.ts (preflight → create → verify → sign → send → sent → poll)
+ transfers.ts (ledger + activity merge) wallet-record.ts errors.ts env.ts
+lib/browser/ demo mode only: demo.ts (flag + appFetch) engine.ts (the /api routes in the tab) keystore.ts signer.ts api-key.ts
+proxy.ts demo mode: every /api route → 404 demo_mode
 ```
 
-MIT. Support: https://t.me/trenchytools · X @trenchytoolz.
+MIT. Support: https://t.me/ · X @trenchytoolz.
